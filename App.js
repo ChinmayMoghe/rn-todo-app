@@ -1,14 +1,12 @@
 import { useReducer } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import AddTask from "./components/AddTask";
-import Task from "./components/Task";
-import TaskList from "./components/TaskList";
-import {
-  ADD_TODO,
-  COMPLETED_TODO,
-  REMOVE_TODO,
-  TOGGLE_TODO_COMPLETE,
-} from "./constants";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { TodosContext } from "./context/TodosContext";
+
+import { ADD_TODO, REMOVE_TODO, TOGGLE_TODO_COMPLETE } from "./constants";
+import Home from "./screens/Home";
+import AddTask from "./screens/AddTask";
+import { View } from "react-native";
 
 const INITIAL_TASKS_STATE = [
   {
@@ -38,28 +36,18 @@ const tasksReducer = (state, action) => {
   }
 };
 
+const Stack = createNativeStackNavigator();
+
 export default function App() {
   const [todos, dispatch] = useReducer(tasksReducer, INITIAL_TASKS_STATE);
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>TODO List</Text>
-      <TaskList tasks={todos} dispatch={dispatch} />
-      <AddTask dispatch={dispatch} />
-    </View>
+    <NavigationContainer>
+      <TodosContext.Provider value={{ todos, dispatch }}>
+        <Stack.Navigator>
+          <Stack.Screen name="Todos" component={Home}></Stack.Screen>
+          <Stack.Screen name="Add Todo" component={AddTask}></Stack.Screen>
+        </Stack.Navigator>
+      </TodosContext.Provider>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#333",
-    padding: 25,
-    paddingTop: 40,
-  },
-  heading: {
-    color: "#fff",
-    fontSize: 30,
-    textTransform: "uppercase",
-    textAlign: "center",
-  },
-});

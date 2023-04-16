@@ -1,6 +1,7 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import ActionButton from "./ActionButton";
+import { useState } from "react";
 
 const Task = ({
   id,
@@ -9,44 +10,59 @@ const Task = ({
   completed,
   toggleTaskComplete,
 }) => {
+  const [isLongPressed, setIsLongPressed] = useState(false);
   return (
-    <View style={[styles.container, completed ? styles.taskCompleted : ""]}>
-      <ActionButton
-        onPress={() => {
-          toggleTaskComplete(id);
-        }}
-      >
-        <MaterialIcons
-          name={completed ? "check-box" : "check-box-outline-blank"}
-          size={18}
-          color="#fff"
-        />
-      </ActionButton>
-      <Text style={styles.task}>{description}</Text>
-      <View style={styles.actionsContainer}>
-        <ActionButton
-          onPress={() => {
-            deleteTask(id);
-          }}
-        >
-          <MaterialIcons name="delete" size={18} color="#fff" />
-        </ActionButton>
+    <Pressable
+      onLongPress={() => {
+        setIsLongPressed(true);
+      }}
+    >
+      <View style={[styles.container, completed ? styles.taskCompleted : ""]}>
+        <Text style={styles.task}>{description}</Text>
+        {isLongPressed && (
+          <View style={styles.actionsContainer}>
+            <ActionButton
+              onPress={() => {
+                toggleTaskComplete(id);
+              }}
+            >
+              <MaterialIcons
+                name={completed ? "check-box" : "check-box-outline-blank"}
+                size={30}
+                color="#fff"
+              />
+            </ActionButton>
+            <ActionButton
+              onPress={() => {
+                deleteTask(id);
+              }}
+            >
+              <MaterialIcons name="delete" size={30} color="#fff" />
+            </ActionButton>
+            <ActionButton
+              onPress={() => {
+                setIsLongPressed(false);
+              }}
+            >
+              <MaterialIcons name="close" size={30} color="#fff" />
+            </ActionButton>
+          </View>
+        )}
       </View>
-    </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: "yellow",
     borderRadius: 12,
     color: "white",
     padding: 15,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
     justifyContent: "space-between",
-    backgroundColor: "tomato",
+    backgroundColor: "transparent",
   },
   task: {
     fontSize: 20,
@@ -62,7 +78,9 @@ const styles = StyleSheet.create({
     color: "black",
   },
   actionsContainer: {
+    marginTop: 20,
     flexDirection: "row",
+    justifyContent: "space-around",
   },
 });
 
